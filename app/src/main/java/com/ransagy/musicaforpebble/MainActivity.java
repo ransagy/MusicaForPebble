@@ -20,7 +20,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         if (!MetaChangedService.IsRunning)
         {
-            // test
             Intent i = new Intent("com.ransagy.musicaforpebble.MetaChangedService");
             i.setClass(this, MetaChangedService.class);
             this.startService(i);
