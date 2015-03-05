@@ -36,27 +36,34 @@ public class MetaChangedService extends Service {
             Matcher mAl = p.matcher(album);
             Matcher mT = p.matcher(track);
 
+            boolean didModify = false;
+
             if (mAr.find()) {
                 artist = new StringBuilder(artist).reverse().toString();
+                didModify = true;
             }
 
             if (mAl.find()) {
                 album = new StringBuilder(album).reverse().toString();
+                didModify = true;
             }
 
             if (mT.find()) {
                 track = new StringBuilder(track).reverse().toString();
+                didModify = true;
             }
 
             Log.v(LOG_TAG, "After:");
             Log.v(LOG_TAG, artist + ":" + album + ":" + track);
 
-            final Intent i = new Intent(PEBBLE_NOW_PLAYING);
-            i.putExtra(ARTIST, artist);
-            i.putExtra(ALBUM, album);
-            i.putExtra(TRACK, track);
+            if (didModify) {
+                final Intent i = new Intent(PEBBLE_NOW_PLAYING);
+                i.putExtra(ARTIST, artist);
+                i.putExtra(ALBUM, album);
+                i.putExtra(TRACK, track);
 
-            sendBroadcast(i);
+                sendBroadcast(i);
+            }
         }
     };
 
