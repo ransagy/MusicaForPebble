@@ -24,13 +24,13 @@ public class MetaChangedService extends Service {
     private BroadcastReceiver mMetaChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            // Extract metadata from intent.
             String artist = intent.getStringExtra(ARTIST);
             String album = intent.getStringExtra(ALBUM);
             String track = intent.getStringExtra(TRACK);
+            String newArtist = null, newAlbum = null, newTrack = null;
 
-            Log.v(LOG_TAG, "Before:");
-            Log.v(LOG_TAG, artist + ":" + album + ":" + track);
-
+            // Compile and attempt to match Hebrew characters in the metadata.
             Pattern p = Pattern.compile("\\p{InHebrew}", Pattern.UNICODE_CASE);
             Matcher mAr = p.matcher(artist);
             Matcher mAl = p.matcher(album);
@@ -38,35 +38,40 @@ public class MetaChangedService extends Service {
 
             boolean didModify = false;
 
+            // For any part that contains Hebrew, Modify the text and flag we made a change.
             if (mAr.find()) {
-                artist = new StringBuilder(artist).reverse().toString();
+                newArtist = RTLHelper.ReorderTextForRTL(artist, true);
                 didModify = true;
             }
 
             if (mAl.find()) {
-                album = new StringBuilder(album).reverse().toString();
+                newAlbum = RTLHelper.ReorderTextForRTL(album, false);
                 didModify = true;
             }
 
             if (mT.find()) {
-                track = new StringBuilder(track).reverse().toString();
+                newTrack = RTLHelper.ReorderTextForRTL(track, true);
                 didModify = true;
             }
 
-            Log.v(LOG_TAG, "After:");
-            Log.v(LOG_TAG, artist + ":" + album + ":" + track);
-
+            // Only if anything was changed, we'll send a new intent.
             if (didModify) {
+
+                Log.v(LOG_TAG, "Before:");
+                Log.v(LOG_TAG, artist + ":" + album + ":" + track);
+
+                Log.v(LOG_TAG, "After:");
+                Log.v(LOG_TAG, newArtist + ":" + newAlbum + ":" + newTrack);
+
                 final Intent i = new Intent(PEBBLE_NOW_PLAYING);
-                i.putExtra(ARTIST, artist);
-                i.putExtra(ALBUM, album);
-                i.putExtra(TRACK, track);
+                i.putExtra(ARTIST, newArtist);
+                i.putExtra(ALBUM, newAlbum);
+                i.putExtra(TRACK, newTrack);
 
                 sendBroadcast(i);
             }
         }
     };
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -80,6 +85,7 @@ public class MetaChangedService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        // Register our metadata change receiver and flag we're running already.
         registerReceiver(mMetaChangedReceiver, new IntentFilter(MUSIC_METADATACHANGED));
         IsRunning = true;
     }
@@ -88,12 +94,14 @@ public class MetaChangedService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
+        // Cleanup receiver and flag.
         unregisterReceiver(mMetaChangedReceiver);
         IsRunning = false;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        // We're not binding in this service.
         return null;
     }
 }

@@ -16,8 +16,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Set this class to listen to click events on our buttons.
         findViewById(R.id.sendIntentButton).setOnClickListener(this);
 
+        // Only if we're not running yet, start our service with an explicit intent.
         if (!MetaChangedService.IsRunning)
         {
             Intent i = new Intent("com.ransagy.musicaforpebble.MetaChangedService");
@@ -31,15 +33,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         switch(v.getId())
         {
             case R.id.sendIntentButton:
+                // Make an intent to mimic a real metadata change broadcast.
                 Intent i = new Intent(MetaChangedService.MUSIC_METADATACHANGED);
 
-                String artist = ((TextView)findViewById(R.id.txtArtist)).getText().toString();
-                String track = ((TextView)findViewById(R.id.txtTrack)).getText().toString();
-                String album = ((TextView)findViewById(R.id.txtAlbum)).getText().toString();
-
-                i.putExtra(MetaChangedService.ARTIST,artist);
-                i.putExtra(MetaChangedService.TRACK,track);
-                i.putExtra(MetaChangedService.ALBUM,album);
+                // Use the UI values for the intent.
+                i.putExtra(MetaChangedService.ARTIST,((TextView)findViewById(R.id.txtArtist)).getText().toString());
+                i.putExtra(MetaChangedService.TRACK,((TextView)findViewById(R.id.txtTrack)).getText().toString());
+                i.putExtra(MetaChangedService.ALBUM,((TextView)findViewById(R.id.txtAlbum)).getText().toString());
 
                 sendBroadcast(i);
                 break;
