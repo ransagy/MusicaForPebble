@@ -16,6 +16,8 @@ public class RTLHelper {
             String[] words = source.split(" ");
 
             // TODO source strings of (MAX_CHARS_PER_LINE-1) aren't displayed properly.
+            // TODO don't reverse non-Hebrew strings.
+            // TODO need to fix too long strings so ellipsis doesn't cut them in the wrong place.
             for (int wordIndex = 0, charCount = 0; wordIndex < words.length; wordIndex++, sbTemp.setLength(0)) {
                 sbTemp.append(words[wordIndex]);
                 charCount += words[wordIndex].length();
