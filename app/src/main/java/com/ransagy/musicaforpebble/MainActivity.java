@@ -1,18 +1,18 @@
 package com.ransagy.musicaforpebble;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -20,8 +20,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         findViewById(R.id.sendIntentButton).setOnClickListener(this);
 
         // Only if we're not running yet, start our service with an explicit intent.
-        if (!MetaChangedService.IsRunning)
-        {
+        if (!MetaChangedService.IsRunning) {
             Intent i = new Intent("com.ransagy.musicaforpebble.MetaChangedService");
             i.setClass(this, MetaChangedService.class);
             this.startService(i);
@@ -30,18 +29,36 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch(v.getId())
-        {
+        switch (v.getId()) {
             case R.id.sendIntentButton:
                 // Make an intent to mimic a real metadata change broadcast.
                 Intent i = new Intent(MetaChangedService.MUSIC_METADATACHANGED);
 
                 // Use the UI values for the intent.
-                i.putExtra(MetaChangedService.ARTIST,((TextView)findViewById(R.id.txtArtist)).getText().toString());
-                i.putExtra(MetaChangedService.TRACK,((TextView)findViewById(R.id.txtTrack)).getText().toString());
-                i.putExtra(MetaChangedService.ALBUM,((TextView)findViewById(R.id.txtAlbum)).getText().toString());
+                i.putExtra(MetaChangedService.ARTIST, ((TextView) findViewById(R.id.txtArtist)).getText().toString());
+                i.putExtra(MetaChangedService.TRACK, ((TextView) findViewById(R.id.txtTrack)).getText().toString());
+                i.putExtra(MetaChangedService.ALBUM, ((TextView) findViewById(R.id.txtAlbum)).getText().toString());
 
                 sendBroadcast(i);
+                break;
+            case R.id.sendAlternateIntentButton:
+                // Make an intent to mimic a metadata change broadcast that the pebble app listens to.
+                Intent ap = new Intent(MetaChangedService.PEBBLE_NOW_PLAYING);
+
+                // Use the UI values for the intent.
+                float maxArtist = GeneralUtils.TryParseFloat(((TextView) findViewById(R.id.maxArtistLine)).getText().toString(),MetaChangedService.MAX_WIDTH_PER_ARTIST_LINE);
+                float maxTrack = GeneralUtils.TryParseFloat(((TextView) findViewById(R.id.maxTrackLine)).getText().toString(),MetaChangedService.MAX_WIDTH_PER_TRACK_LINE);
+                ap.putExtra(MetaChangedService.ARTIST, RTLHelper.ReorderTextForRTLAlt(((TextView) findViewById(R.id.txtArtist)).getText().toString(), maxArtist));
+                ap.putExtra(MetaChangedService.TRACK, RTLHelper.ReorderTextForRTLAlt(((TextView) findViewById(R.id.txtTrack)).getText().toString(), maxTrack));
+                ap.putExtra(MetaChangedService.ALBUM, RTLHelper.ReorderTextForRTLAlt(((TextView) findViewById(R.id.txtAlbum)).getText().toString(), 0));
+
+                sendBroadcast(ap);
+                break;
+            case R.id.defaultToAltCheckBox:
+                RTLHelper.CurrentMode = ((CheckBox)findViewById(R.id.defaultToAltCheckBox)).isChecked() ? 1 : 0;
+                break;
+            case R.id.debugButton:
+                GeneralUtils.DebugSomething();
                 break;
         }
     }
