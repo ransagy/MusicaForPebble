@@ -20,7 +20,7 @@
         </activity>
 
         <receiver
-            android:name=".bootstrapper"
+            android:name=".BootstrapBroadcastReceiver"
             android:enabled="true"
             android:exported="false" >
             <intent-filter>

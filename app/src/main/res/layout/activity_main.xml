@@ -11,8 +11,10 @@
         android:layout_height="wrap_content"
         android:text="@string/sendIntent"
         android:id="@+id/sendIntentButton"
-        android:layout_centerVertical="true"
-        android:onClick="onClick" />
+        android:onClick="onClick"
+        android:layout_below="@+id/txtAlbum"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -22,80 +24,29 @@
         android:layout_alignParentStart="true"
         android:autoText="false"
         android:hint="Artist"
-        android:layout_alignRight="@+id/sendAlternateIntentButton"
-        android:layout_alignEnd="@+id/sendAlternateIntentButton" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/txtTrack"
+        android:hint="Track Title"
         android:layout_below="@+id/txtArtist"
-        android:layout_marginTop="46dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="Track Title"
-        android:layout_alignRight="@+id/sendAlternateIntentButton"
-        android:layout_alignEnd="@+id/sendAlternateIntentButton" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/txtAlbum"
+        android:hint="Album"
         android:layout_below="@+id/txtTrack"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="43dp"
-        android:layout_alignRight="@+id/txtTrack"
-        android:layout_alignEnd="@+id/txtTrack"
-        android:hint="Album" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SEND ALTERNATE INTENT!"
-        android:id="@+id/sendAlternateIntentButton"
-        android:onClick="onClick"
-        android:layout_alignTop="@+id/sendIntentButton"
-        android:layout_toRightOf="@+id/sendIntentButton"
-        android:layout_toEndOf="@+id/sendIntentButton" />
-
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Default to alternate method "
-        android:id="@+id/defaultToAltCheckBox"
-        android:layout_above="@+id/sendIntentButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="onClick" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/maxArtistLine"
-        android:layout_alignTop="@+id/txtArtist"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:hint="max" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/maxTrackLine"
-        android:layout_alignTop="@+id/txtTrack"
-        android:layout_alignRight="@+id/maxArtistLine"
-        android:layout_alignEnd="@+id/maxArtistLine"
-        android:hint="max" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Debug!"
-        android:id="@+id/debugButton"
-        android:layout_below="@+id/sendIntentButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="onClick" />
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
