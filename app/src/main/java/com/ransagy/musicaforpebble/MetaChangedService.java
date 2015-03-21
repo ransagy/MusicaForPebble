@@ -18,6 +18,7 @@ public class MetaChangedService extends Service {
 
     public static boolean IsRunning = false;
 
+    private AudioManager audioManagerInstance;
     private final String LOG_TAG = this.getClass().getSimpleName();
     private Handler uiHandler = new Handler();
 
@@ -87,12 +88,10 @@ public class MetaChangedService extends Service {
                 sendMediaKeyIntents(KeyEvent.KEYCODE_MEDIA_NEXT);
             } else if (data.contains(PebbleHelper.AppKeys.VOLUME_DOWN)) {
                 Log.i(LOG_TAG, "watchapp wants to decrease volume!");
-                AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-                am.adjustVolume(AudioManager.ADJUST_LOWER, 0);
+                audioManagerInstance.adjustVolume(AudioManager.ADJUST_LOWER, 0);
             } else if (data.contains(PebbleHelper.AppKeys.VOLUME_UP)) {
                 Log.i(LOG_TAG, "watchapp wants to increase volume!");
-                AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-                am.adjustVolume(AudioManager.ADJUST_RAISE, 0);
+                audioManagerInstance.adjustVolume(AudioManager.ADJUST_RAISE, 0);
             } else {
                 Log.i(LOG_TAG, "Received unknown data from watchapp!");
             }
@@ -130,6 +129,8 @@ public class MetaChangedService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        audioManagerInstance = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         // Register our metadata change receiver and flag we're running already.
         registerReceiver(mMetaChangedReceiver, new IntentFilter(MetaHelper.ANDROID_MUSIC_METACHANGED_INTENT));
