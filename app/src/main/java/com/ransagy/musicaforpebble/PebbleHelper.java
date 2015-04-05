@@ -1,6 +1,7 @@
 package com.ransagy.musicaforpebble;
 
 import android.content.Context;
+import android.util.Pair;
 
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -21,17 +22,32 @@ public class PebbleHelper {
         public static final int FORWARD = 0x6;
         public static final int VOLUME_DOWN = 0x7;
         public static final int VOLUME_UP = 0x8;
+        public static final int EXTRA_ARTIST = 0x9;
+        public static final int EXTRA_TRACK = 0xA;
+        public static final int EXTRA_ALBUM = 0xB;
     }
 
-    public static void SendMetadataToWatch(Context appContext, String artist, String album, String track) {
+    public static void SendMetadataToWatch(Context appContext, Pair<String, String> artist, Pair<String, String> album, Pair<String, String> track) {
         boolean connected = PebbleKit.isWatchConnected(appContext);
 
         if (connected && artist != null && album != null && track != null) {
             PebbleDictionary data = new PebbleDictionary();
 
-            data.addString(PebbleHelper.AppKeys.ARTIST, artist);
-            data.addString(PebbleHelper.AppKeys.TRACK, track);
-            data.addString(PebbleHelper.AppKeys.ALBUM, album);
+            data.addString(PebbleHelper.AppKeys.ARTIST, artist.first);
+            data.addString(PebbleHelper.AppKeys.TRACK, track.first);
+            data.addString(PebbleHelper.AppKeys.ALBUM, album.first);
+
+            if (artist.second.length() > 0) {
+                data.addString(PebbleHelper.AppKeys.EXTRA_ARTIST, artist.second);
+            }
+
+            if (track.second.length() > 0) {
+                data.addString(PebbleHelper.AppKeys.EXTRA_TRACK, track.second);
+            }
+
+            if (album.second.length() > 0) {
+                data.addString(PebbleHelper.AppKeys.EXTRA_ALBUM, album.second);
+            }
 
             PebbleKit.sendDataToPebble(appContext, PebbleHelper.PEBBLE_APP_UUID, data);
         }

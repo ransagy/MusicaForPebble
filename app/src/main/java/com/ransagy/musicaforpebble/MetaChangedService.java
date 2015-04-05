@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 
 import com.getpebble.android.kit.PebbleKit;
@@ -22,9 +23,9 @@ public class MetaChangedService extends Service {
     private final String LOG_TAG = this.getClass().getSimpleName();
     private Handler uiHandler = new Handler();
 
-    private String lastArtist = "";
-    private String lastTrack = "";
-    private String lastAlbum = "";
+    private Pair<String,String> lastArtist = new Pair<>("","");
+    private Pair<String,String> lastTrack = new Pair<>("","");
+    private Pair<String,String> lastAlbum = new Pair<>("","");
 
     private BroadcastReceiver mMetaChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -34,9 +35,9 @@ public class MetaChangedService extends Service {
             String album = intent.getStringExtra(MetaHelper.MetadataParts.ALBUM);
             String track = intent.getStringExtra(MetaHelper.MetadataParts.TRACK);
 
-            lastArtist = RTLHelper.ReorderRTLTextForPebble(artist);
-            lastTrack = RTLHelper.ReorderRTLTextForPebble(track);
-            lastAlbum = RTLHelper.ReorderRTLTextForPebble(album);
+            lastArtist = RTLHelper.ReorderRTLTextForPebble(artist, 13);
+            lastTrack = RTLHelper.ReorderRTLTextForPebble(track, 10);
+            lastAlbum = RTLHelper.ReorderRTLTextForPebble(album, 13);
 
             PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack);
         }
