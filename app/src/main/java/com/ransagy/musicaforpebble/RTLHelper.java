@@ -13,6 +13,8 @@ public class RTLHelper {
     }
 
     public static Pair<String, String> ReorderRTLTextForPebble(String source, int charLimit) {
+        if (source == null || source == "") return new Pair<>("","");
+
         if (!hebrewPattern.matcher(source).find()) {
             return new Pair<>(source, "");
         } else {

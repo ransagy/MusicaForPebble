@@ -2,7 +2,7 @@ package com.ransagy.musicaforpebble;
 
 public class MetaHelper {
 
-    public static final String ANDROID_MUSIC_METACHANGED_INTENT = "com.android.music.metachanged";
+    public static final String ANDROID_MUSIC_META_CHANGED_INTENT = "com.android.music.metachanged";
 
     public class MetadataParts {
         public static final String TRACK = "track";

@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -18,14 +20,16 @@ import com.getpebble.android.kit.util.PebbleDictionary;
 public class MetaChangedService extends Service {
 
     public static boolean IsRunning = false;
+    public static final String LOCAL_INTENT = "MetaChangedServiceUpdate";
+    public static final String LOCAL_DATA = "Data";
 
     private AudioManager audioManagerInstance;
     private final String LOG_TAG = this.getClass().getSimpleName();
     private Handler uiHandler = new Handler();
 
-    private Pair<String,String> lastArtist = new Pair<>("","");
-    private Pair<String,String> lastTrack = new Pair<>("","");
-    private Pair<String,String> lastAlbum = new Pair<>("","");
+    private Pair<String, String> lastArtist = new Pair<>("", "");
+    private Pair<String, String> lastTrack = new Pair<>("", "");
+    private Pair<String, String> lastAlbum = new Pair<>("", "");
 
     private BroadcastReceiver mMetaChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -35,11 +39,15 @@ public class MetaChangedService extends Service {
             String album = intent.getStringExtra(MetaHelper.MetadataParts.ALBUM);
             String track = intent.getStringExtra(MetaHelper.MetadataParts.TRACK);
 
-            lastArtist = RTLHelper.ReorderRTLTextForPebble(artist, 13);
-            lastTrack = RTLHelper.ReorderRTLTextForPebble(track, 10);
-            lastAlbum = RTLHelper.ReorderRTLTextForPebble(album, 13);
+            lastArtist = RTLHelper.ReorderRTLTextForPebble(artist, PebbleHelper.MAX_LARGE_BOLD_TEXT_PER_LINE);
+            lastTrack = RTLHelper.ReorderRTLTextForPebble(track, PebbleHelper.MAX_SMALL_BOLD_TEXT_PER_LINE);
+            lastAlbum = RTLHelper.ReorderRTLTextForPebble(album, PebbleHelper.MAX_LARGE_BOLD_TEXT_PER_LINE);
 
             PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack);
+
+            Intent localIntent = new Intent(LOCAL_INTENT);
+            localIntent.putExtra(LOCAL_DATA, new String[]{artist, track, album});
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(localIntent);
         }
     };
 
@@ -75,6 +83,8 @@ public class MetaChangedService extends Service {
         @Override
         public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
 
+            PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
+
             if (data.contains(PebbleHelper.AppKeys.INIT)) {
                 Log.i(LOG_TAG, "Received init data from watchapp.");
                 PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack);
@@ -104,8 +114,6 @@ public class MetaChangedService extends Service {
                         /* Update your UI here. */
                 }
             });
-
-            PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
         }
     };
 
@@ -134,7 +142,7 @@ public class MetaChangedService extends Service {
         audioManagerInstance = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         // Register our metadata change receiver and flag we're running already.
-        registerReceiver(mMetaChangedReceiver, new IntentFilter(MetaHelper.ANDROID_MUSIC_METACHANGED_INTENT));
+        registerReceiver(mMetaChangedReceiver, new IntentFilter(MetaHelper.ANDROID_MUSIC_META_CHANGED_INTENT));
 
         // Register Pebble receivers.
         PebbleKit.registerPebbleConnectedReceiver(getApplicationContext(), mPebbleConnectedReceiver);

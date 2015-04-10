@@ -3,50 +3,105 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:background="@android:color/background_dark">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sendIntent"
-        android:id="@+id/sendIntentButton"
-        android:onClick="onClick"
-        android:layout_below="@+id/txtAlbum"
+        android:text="Last Received Metadata:"
+        android:id="@+id/txtLastReceived"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="26dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="@dimen/abc_text_size_small_material"
+        android:paddingLeft="@dimen/abc_control_padding_material"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txtArtist"
+        android:id="@+id/txtArtistMain"
+        android:layout_marginTop="26dp"
+        android:textColor="@android:color/primary_text_dark"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:layout_below="@+id/txtLastReceived"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:autoText="false"
-        android:hint="Artist"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/txtLastReceived"
+        android:layout_alignEnd="@+id/txtLastReceived"
+        android:paddingLeft="@dimen/abc_control_padding_material" />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txtTrack"
-        android:hint="Track Title"
-        android:layout_below="@+id/txtArtist"
+        android:id="@+id/txtArtistSecondary"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/primary_text_dark"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:paddingLeft="@dimen/abc_control_padding_material"
+        android:layout_below="@+id/txtArtistMain"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/txtArtistMain"
+        android:layout_alignEnd="@+id/txtArtistMain" />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txtAlbum"
-        android:hint="Album"
-        android:layout_below="@+id/txtTrack"
+        android:id="@+id/txtTrackMain"
+        android:layout_marginTop="26dp"
+        android:textColor="@android:color/primary_text_dark"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:layout_below="@+id/txtArtistSecondary"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/txtArtistSecondary"
+        android:paddingLeft="@dimen/abc_control_padding_material"
+        android:layout_alignEnd="@+id/txtArtistSecondary" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtTrackSecondary"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/primary_text_dark"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:paddingLeft="@dimen/abc_control_padding_material"
+        android:layout_below="@+id/txtTrackMain"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/txtTrackMain"
+        android:layout_alignEnd="@+id/txtTrackMain" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtAlbumMain"
+        android:layout_marginTop="26dp"
+        android:textColor="@android:color/primary_text_dark"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:layout_below="@+id/txtTrackSecondary"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/txtTrackSecondary"
+        android:paddingLeft="@dimen/abc_control_padding_material"
+        android:layout_alignEnd="@+id/txtTrackSecondary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/primary_text_dark"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:paddingLeft="@dimen/abc_control_padding_material"
+        android:layout_below="@+id/txtAlbumMain"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/txtAlbumMain"
+        android:layout_alignEnd="@+id/txtAlbumMain" />
 </RelativeLayout>

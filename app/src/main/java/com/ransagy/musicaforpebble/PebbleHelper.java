@@ -11,6 +11,8 @@ import java.util.UUID;
 public class PebbleHelper {
 
     public final static UUID PEBBLE_APP_UUID = UUID.fromString("71bfc6b0-3969-463d-857b-14ad6004224b");
+    public final static int MAX_LARGE_BOLD_TEXT_PER_LINE = 13;
+    public final static int MAX_SMALL_BOLD_TEXT_PER_LINE = 10;
 
     public class AppKeys {
         public static final int ARTIST = 0x0;
