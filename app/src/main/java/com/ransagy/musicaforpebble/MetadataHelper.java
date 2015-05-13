@@ -1,6 +1,6 @@
 package com.ransagy.musicaforpebble;
 
-public class MetaHelper {
+public class MetadataHelper {
 
     public static final String ANDROID_MUSIC_META_CHANGED_INTENT = "com.android.music.metachanged";
 

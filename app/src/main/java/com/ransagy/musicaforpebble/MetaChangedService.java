@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,7 +24,7 @@ public class MetaChangedService extends Service {
 
     private AudioManager audioManagerInstance;
     private final String LOG_TAG = this.getClass().getSimpleName();
-    private Handler uiHandler = new Handler();
+    private final Handler handler = new Handler();
 
     private Pair<String, String> lastArtist = new Pair<>("", "");
     private Pair<String, String> lastTrack = new Pair<>("", "");
@@ -35,9 +34,9 @@ public class MetaChangedService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract metadata from intent.
-            String artist = intent.getStringExtra(MetaHelper.MetadataParts.ARTIST);
-            String album = intent.getStringExtra(MetaHelper.MetadataParts.ALBUM);
-            String track = intent.getStringExtra(MetaHelper.MetadataParts.TRACK);
+            String artist = intent.getStringExtra(MetadataHelper.MetadataParts.ARTIST);
+            String album = intent.getStringExtra(MetadataHelper.MetadataParts.ALBUM);
+            String track = intent.getStringExtra(MetadataHelper.MetadataParts.TRACK);
 
             lastArtist = RTLHelper.ReorderRTLTextForPebble(artist, PebbleHelper.MAX_LARGE_BOLD_TEXT_PER_LINE);
             lastTrack = RTLHelper.ReorderRTLTextForPebble(track, PebbleHelper.MAX_SMALL_BOLD_TEXT_PER_LINE);
@@ -68,50 +67,62 @@ public class MetaChangedService extends Service {
     private PebbleKit.PebbleAckReceiver mPebbleAckReceiver = new PebbleKit.PebbleAckReceiver(PebbleHelper.PEBBLE_APP_UUID) {
         @Override
         public void receiveAck(Context context, int transactionId) {
-            Log.i(LOG_TAG, "Received ack for transaction " + transactionId);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(LOG_TAG, "Received ack from watch app!");
+                }
+            });
         }
     };
 
     private PebbleKit.PebbleNackReceiver mPebbleNackReceiver = new PebbleKit.PebbleNackReceiver(PebbleHelper.PEBBLE_APP_UUID) {
         @Override
         public void receiveNack(Context context, int transactionId) {
-            Log.i(LOG_TAG, "Received nack for transaction " + transactionId);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(LOG_TAG, "Received nack from watch app!");
+                }
+            });
         }
     };
 
     private PebbleKit.PebbleDataReceiver mPebbleDataReceiver = new PebbleKit.PebbleDataReceiver(PebbleHelper.PEBBLE_APP_UUID) {
         @Override
         public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-
-            PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
-
-            if (data.contains(PebbleHelper.AppKeys.INIT)) {
-                Log.i(LOG_TAG, "Received init data from watchapp.");
-                PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack);
-            } else if (data.contains(PebbleHelper.AppKeys.PLAYPAUSE)) {
-                Log.i(LOG_TAG, "watchapp wants to " + (data.getInteger(PebbleHelper.AppKeys.PLAYPAUSE) == 1 ? "Play!" : "Pause!"));
-                sendMediaKeyIntents(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-            } else if (data.contains(PebbleHelper.AppKeys.BACKWARD)) {
-                Log.i(LOG_TAG, "watchapp wants to go to previous track!");
-                sendMediaKeyIntents(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-            } else if (data.contains(PebbleHelper.AppKeys.FORWARD)) {
-                Log.i(LOG_TAG, "watchapp wants to go to next track!");
-                sendMediaKeyIntents(KeyEvent.KEYCODE_MEDIA_NEXT);
-            } else if (data.contains(PebbleHelper.AppKeys.VOLUME_DOWN)) {
-                Log.i(LOG_TAG, "watchapp wants to decrease volume!");
-                audioManagerInstance.adjustVolume(AudioManager.ADJUST_LOWER, 0);
-            } else if (data.contains(PebbleHelper.AppKeys.VOLUME_UP)) {
-                Log.i(LOG_TAG, "watchapp wants to increase volume!");
-                audioManagerInstance.adjustVolume(AudioManager.ADJUST_RAISE, 0);
-            } else {
-                Log.i(LOG_TAG, "Received unknown data from watchapp!");
-            }
-
             // Handle Android UI operations in a handler
-            uiHandler.post(new Runnable() {
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
-                        /* Update your UI here. */
+                    PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
+
+                    // If we don't have anything in the dictionary, stop.
+                    if (!data.iterator().hasNext()) {
+                        return;
+                    }
+
+                    if (data.contains(PebbleHelper.AppKeys.INIT)) {
+                        Log.i(LOG_TAG, "Received init data from watch app.");
+                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack);
+                    } else if (data.contains(PebbleHelper.AppKeys.PLAY_PAUSE)) {
+                        Log.i(LOG_TAG, "watch app wants to " + (data.getInteger(PebbleHelper.AppKeys.PLAY_PAUSE) == 1 ? "Play!" : "Pause!"));
+                        sendMediaKeyIntents(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                    } else if (data.contains(PebbleHelper.AppKeys.BACKWARD)) {
+                        Log.i(LOG_TAG, "watch app wants to go to previous track!");
+                        sendMediaKeyIntents(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                    } else if (data.contains(PebbleHelper.AppKeys.FORWARD)) {
+                        Log.i(LOG_TAG, "watch app wants to go to next track!");
+                        sendMediaKeyIntents(KeyEvent.KEYCODE_MEDIA_NEXT);
+                    } else if (data.contains(PebbleHelper.AppKeys.VOLUME_DOWN)) {
+                        Log.i(LOG_TAG, "watch app wants to decrease volume!");
+                        audioManagerInstance.adjustVolume(AudioManager.ADJUST_LOWER, 0);
+                    } else if (data.contains(PebbleHelper.AppKeys.VOLUME_UP)) {
+                        Log.i(LOG_TAG, "watch app wants to increase volume!");
+                        audioManagerInstance.adjustVolume(AudioManager.ADJUST_RAISE, 0);
+                    } else {
+                        Log.i(LOG_TAG, "Received unknown data from watch app!");
+                    }
                 }
             });
         }
@@ -142,7 +153,7 @@ public class MetaChangedService extends Service {
         audioManagerInstance = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         // Register our metadata change receiver and flag we're running already.
-        registerReceiver(mMetaChangedReceiver, new IntentFilter(MetaHelper.ANDROID_MUSIC_META_CHANGED_INTENT));
+        registerReceiver(mMetaChangedReceiver, new IntentFilter(MetadataHelper.ANDROID_MUSIC_META_CHANGED_INTENT));
 
         // Register Pebble receivers.
         PebbleKit.registerPebbleConnectedReceiver(getApplicationContext(), mPebbleConnectedReceiver);

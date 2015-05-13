@@ -18,7 +18,7 @@ public class PebbleHelper {
         public static final int ARTIST = 0x0;
         public static final int TRACK = 0x1;
         public static final int ALBUM = 0x2;
-        public static final int PLAYPAUSE = 0x3;
+        public static final int PLAY_PAUSE = 0x3;
         public static final int INIT = 0x4;
         public static final int BACKWARD = 0x5;
         public static final int FORWARD = 0x6;
