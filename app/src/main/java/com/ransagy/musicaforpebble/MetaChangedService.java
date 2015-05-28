@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -15,6 +16,8 @@ import android.view.KeyEvent;
 
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
+
+import java.lang.reflect.Method;
 
 public class MetaChangedService extends Service {
 
@@ -129,13 +132,22 @@ public class MetaChangedService extends Service {
     };
 
     private void sendMediaKeyIntents(int keyEventCode) {
-        Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
-        sendOrderedBroadcast(i, null);
+        KeyEvent keDown = new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode);
+        KeyEvent keUp = new KeyEvent(KeyEvent.ACTION_UP, keyEventCode);
 
-        i = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
-        sendOrderedBroadcast(i, null);
+        // Use the new AudioManager API method on KitKat and greater, otherwise fallback to sending Intents.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            audioManagerInstance.dispatchMediaKeyEvent(keDown);
+            audioManagerInstance.dispatchMediaKeyEvent(keUp);
+        } else {
+            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            i.putExtra(Intent.EXTRA_KEY_EVENT, keDown);
+            sendOrderedBroadcast(i, null);
+
+            i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            i.putExtra(Intent.EXTRA_KEY_EVENT, keUp);
+            sendOrderedBroadcast(i, null);
+        }
     }
 
     @Override
