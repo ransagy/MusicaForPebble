@@ -27,31 +27,40 @@ public class PebbleHelper {
         public static final int EXTRA_ARTIST = 0x9;
         public static final int EXTRA_TRACK = 0xA;
         public static final int EXTRA_ALBUM = 0xB;
+        public static final int VOLUME_STATE = 0xC;
     }
 
     public static void SendMetadataToWatch(Context appContext, Pair<String, String> artist, Pair<String, String> album, Pair<String, String> track) {
+        SendMetadataToWatch(appContext, artist, album, track, -1, -1);
+    }
+
+    public static void SendMetadataToWatch(Context appContext, Pair<String, String> artist, Pair<String, String> album, Pair<String, String> track, int volume, int maxVolume) {
         boolean connected = PebbleKit.isWatchConnected(appContext);
 
         if (connected && artist != null && album != null && track != null) {
             PebbleDictionary data = new PebbleDictionary();
 
-            data.addString(PebbleHelper.AppKeys.ARTIST, artist.first);
-            data.addString(PebbleHelper.AppKeys.TRACK, track.first);
-            data.addString(PebbleHelper.AppKeys.ALBUM, album.first);
+            data.addString(AppKeys.ARTIST, artist.first);
+            data.addString(AppKeys.TRACK, track.first);
+            data.addString(AppKeys.ALBUM, album.first);
 
             if (artist.second.length() > 0) {
-                data.addString(PebbleHelper.AppKeys.EXTRA_ARTIST, artist.second);
+                data.addString(AppKeys.EXTRA_ARTIST, artist.second);
             }
 
             if (track.second.length() > 0) {
-                data.addString(PebbleHelper.AppKeys.EXTRA_TRACK, track.second);
+                data.addString(AppKeys.EXTRA_TRACK, track.second);
             }
 
             if (album.second.length() > 0) {
-                data.addString(PebbleHelper.AppKeys.EXTRA_ALBUM, album.second);
+                data.addString(AppKeys.EXTRA_ALBUM, album.second);
             }
 
-            PebbleKit.sendDataToPebble(appContext, PebbleHelper.PEBBLE_APP_UUID, data);
+            if (volume > -1 && maxVolume > -1) {
+                data.addInt32(AppKeys.VOLUME_STATE, (int) (((float) volume / maxVolume) * 100));
+            }
+
+            PebbleKit.sendDataToPebble(appContext, PEBBLE_APP_UUID, data);
         }
     }
 }
