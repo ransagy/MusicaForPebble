@@ -56,9 +56,9 @@ public class PebbleHelper {
                 data.addString(AppKeys.EXTRA_ALBUM, album.second);
             }
 
-            if (volume > -1 && maxVolume > -1) {
-                data.addInt32(AppKeys.VOLUME_STATE, (int) (((float) volume / maxVolume) * 100));
-            }
+            // Normalize the volume to a 0-100 scale.
+            volume = (volume >= 0 && volume <= maxVolume) ? volume : (volume < 0 ? 0 : maxVolume);
+            data.addInt32(AppKeys.VOLUME_STATE, (int) (((float) volume / maxVolume) * 100));
 
             PebbleKit.sendDataToPebble(appContext, PEBBLE_APP_UUID, data);
         }

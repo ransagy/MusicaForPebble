@@ -118,11 +118,11 @@ public class MetaChangedService extends Service {
                     } else if (data.contains(PebbleHelper.AppKeys.VOLUME_DOWN)) {
                         Log.i(LOG_TAG, "watch app wants to decrease volume!");
                         audioManagerInstance.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
-                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC), audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC)-1, audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
                     } else if (data.contains(PebbleHelper.AppKeys.VOLUME_UP)) {
                         Log.i(LOG_TAG, "watch app wants to increase volume!");
                         audioManagerInstance.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC), audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC)+1, audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
                     } else {
                         Log.i(LOG_TAG, "Received unknown data from watch app!");
                     }
