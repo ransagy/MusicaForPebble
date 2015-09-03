@@ -13,6 +13,7 @@ public class PebbleHelper {
     public final static UUID PEBBLE_APP_UUID = UUID.fromString("71bfc6b0-3969-463d-857b-14ad6004224b");
     public final static int MAX_LARGE_BOLD_TEXT_PER_LINE = 13;
     public final static int MAX_SMALL_BOLD_TEXT_PER_LINE = 10;
+    private final static int OPTIONAL_EMPTY = -999;
 
     public class AppKeys {
         public static final int ARTIST = 0x0;
@@ -31,7 +32,7 @@ public class PebbleHelper {
     }
 
     public static void SendMetadataToWatch(Context appContext, Pair<String, String> artist, Pair<String, String> album, Pair<String, String> track) {
-        SendMetadataToWatch(appContext, artist, album, track, -1, -1);
+        SendMetadataToWatch(appContext, artist, album, track, OPTIONAL_EMPTY, OPTIONAL_EMPTY);
     }
 
     public static void SendMetadataToWatch(Context appContext, Pair<String, String> artist, Pair<String, String> album, Pair<String, String> track, int volume, int maxVolume) {
@@ -56,9 +57,11 @@ public class PebbleHelper {
                 data.addString(AppKeys.EXTRA_ALBUM, album.second);
             }
 
-            // Normalize the volume to a 0-100 scale.
-            volume = (volume >= 0 && volume <= maxVolume) ? volume : (volume < 0 ? 0 : maxVolume);
-            data.addInt32(AppKeys.VOLUME_STATE, (int) (((float) volume / maxVolume) * 100));
+            if (volume != OPTIONAL_EMPTY && maxVolume != OPTIONAL_EMPTY) {
+                // Normalize the volume to a 0-100 scale.
+                volume = (volume >= 0 && volume <= maxVolume) ? volume : (volume < 0 ? 0 : maxVolume);
+                data.addInt32(AppKeys.VOLUME_STATE, (int) (((float) volume / maxVolume) * 100));
+            }
 
             PebbleKit.sendDataToPebble(appContext, PEBBLE_APP_UUID, data);
         }
