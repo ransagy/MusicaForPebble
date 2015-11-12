@@ -92,11 +92,13 @@ public class MetaChangedService extends Service {
     private PebbleKit.PebbleDataReceiver mPebbleDataReceiver = new PebbleKit.PebbleDataReceiver(PebbleHelper.PEBBLE_APP_UUID) {
         @Override
         public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
+
+            PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
+
             // Handle Android UI operations in a handler
-            handler.post(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
 
                     // If we don't have anything in the dictionary, stop.
                     if (!data.iterator().hasNext()) {
@@ -118,16 +120,16 @@ public class MetaChangedService extends Service {
                     } else if (data.contains(PebbleHelper.AppKeys.VOLUME_DOWN)) {
                         Log.i(LOG_TAG, "watch app wants to decrease volume!");
                         audioManagerInstance.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
-                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC)-1, audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC) - 1, audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
                     } else if (data.contains(PebbleHelper.AppKeys.VOLUME_UP)) {
                         Log.i(LOG_TAG, "watch app wants to increase volume!");
                         audioManagerInstance.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC)+1, audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                        PebbleHelper.SendMetadataToWatch(getApplicationContext(), lastArtist, lastAlbum, lastTrack, audioManagerInstance.getStreamVolume(AudioManager.STREAM_MUSIC) + 1, audioManagerInstance.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
                     } else {
                         Log.i(LOG_TAG, "Received unknown data from watch app!");
                     }
                 }
-            });
+            }, 250);
         }
     };
 
@@ -167,7 +169,7 @@ public class MetaChangedService extends Service {
         // Register our metadata change receiver and flag we're running already.
         IntentFilter nowPlayingFilter = new IntentFilter();
 
-        for (String metaChangedAction: MetadataHelper.GetMetaChangedActions()) {
+        for (String metaChangedAction : MetadataHelper.GetMetaChangedActions()) {
             nowPlayingFilter.addAction(metaChangedAction);
         }
 
