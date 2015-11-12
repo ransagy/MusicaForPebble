@@ -35,9 +35,9 @@ public class MetaChangedService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract metadata from intent.
-            String artist = intent.getStringExtra(MetadataHelper.MetadataParts.ARTIST);
-            String album = intent.getStringExtra(MetadataHelper.MetadataParts.ALBUM);
-            String track = intent.getStringExtra(MetadataHelper.MetadataParts.TRACK);
+            String artist = intent.getStringExtra(MetadataHelper.GetMetadataPartName(intent.getAction(), MetadataHelper.MetadataPartsEnum.ARTIST));
+            String album = intent.getStringExtra(MetadataHelper.GetMetadataPartName(intent.getAction(), MetadataHelper.MetadataPartsEnum.ALBUM));
+            String track = intent.getStringExtra(MetadataHelper.GetMetadataPartName(intent.getAction(), MetadataHelper.MetadataPartsEnum.TRACK));
 
             lastArtist = RTLHelper.ReorderRTLTextForPebble(artist, PebbleHelper.MAX_LARGE_BOLD_TEXT_PER_LINE);
             lastTrack = RTLHelper.ReorderRTLTextForPebble(track, PebbleHelper.MAX_SMALL_BOLD_TEXT_PER_LINE);
@@ -165,7 +165,13 @@ public class MetaChangedService extends Service {
         audioManagerInstance = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         // Register our metadata change receiver and flag we're running already.
-        registerReceiver(mMetaChangedReceiver, new IntentFilter(MetadataHelper.ANDROID_MUSIC_META_CHANGED_INTENT));
+        IntentFilter nowPlayingFilter = new IntentFilter();
+
+        for (String metaChangedAction: MetadataHelper.GetMetaChangedActions()) {
+            nowPlayingFilter.addAction(metaChangedAction);
+        }
+
+        registerReceiver(mMetaChangedReceiver, nowPlayingFilter);
 
         // Register Pebble receivers.
         PebbleKit.registerPebbleConnectedReceiver(getApplicationContext(), mPebbleConnectedReceiver);
